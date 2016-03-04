@@ -1,18 +1,17 @@
-package computerdatabase
+package lunarepic
 
 import io.gatling.core.Predef._
 import io.gatling.http.Predef._
 import scala.concurrent.duration._
 
-class RSGRSimulationAPI100 extends Simulation {
+class LoadStream extends Simulation {
 
   object Browse {
-    val headers_10 = Map("Content-Type" -> "application/json") // Note the headers specific to a given request
     // repeat is a loop resolved at RUNTIME
     val browse = repeat(5, "i") { // Note how we force the counter name so we can reuse it
-	    exec(http("api_rsgr_user ${i}")
-	      .get("/api/rsgr/user"))
-        .pause(1)
+	    exec(
+			http("api_lunar_epic_load_streams ${i}").
+			get("/api/run-forever/stream/load/1210")).pause(1)
     }
   }
 
@@ -25,12 +24,12 @@ class RSGRSimulationAPI100 extends Simulation {
     .userAgentHeader("Mozilla/5.0 (Macintosh; Intel Mac OS X 10.8; rv:16.0) Gecko/20100101 Firefox/16.0")
 
 
-  val users = scenario("RSGR API")
+  val users = scenario("Lunar Epic API")
     .exec(
       addCookie(
-        Cookie("openid", "rsgrtest05001").withDomain("runclub.akqatest.cn").withPath("/")
+        Cookie("openid", "oaSyGtxnkDqY6GEDfyFVrCNCfs-A").withDomain("runclub.akqatest.cn").withPath("/")
       ))
     .exec(Browse.browse)
 
-  setUp(users.inject(atOnceUsers(100)).protocols(httpConf))
+  setUp(users.inject(atOnceUsers(200)).protocols(httpConf))
 }
